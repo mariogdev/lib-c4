@@ -1,9 +1,4 @@
-' convert it with additional command line argument -DRELATIVE_INCLUDE="." to use locally
-!if %variable_exists("RELATIVE_INCLUDE")
-  !include %get_variable_value("RELATIVE_INCLUDE")/C4.puml
-!else
-  !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
-!endif
+!include <C4/C4>
 
 ' Scope: A single software system.
 ' Primary elements: The software system in scope.
@@ -153,9 +148,11 @@ endlegend
 !endprocedure
 
 !global $defaultPersonSprite = "person"
+!global $portraitPerson = "false"
 
 !procedure HIDE_PERSON_SPRITE()
   !$defaultPersonSprite = ""
+  !$portraitPerson = "false"
 !endprocedure
 
 !unquoted procedure SHOW_PERSON_SPRITE($sprite="")
@@ -164,6 +161,17 @@ endlegend
   !else
     !$defaultPersonSprite = $sprite
   !endif
+  !$portraitPerson = "false"
+!endprocedure
+
+!unquoted procedure SHOW_PERSON_PORTRAIT()
+  !$defaultPersonSprite = ""
+  !$portraitPerson = "portrait"
+!endprocedure
+
+!unquoted procedure SHOW_PERSON_OUTLINE()
+  !$defaultPersonSprite = ""
+  !$portraitPerson = "outline"
 !endprocedure
 
 ' Elements
@@ -203,11 +211,23 @@ endlegend
 !endfunction
 
 !unquoted procedure Person($alias, $label, $descr="", $sprite="", $tags="", $link="")
+!if ($portraitPerson == "portrait") && ($sprite == "")
+actor "$getPerson($label, $descr, $sprite)$getProps()" $toStereos("person", $tags) as $alias $getLink($link)
+!elseif ($portraitPerson == "outline") && ($sprite == "")
+person "$getPerson($label, $descr, $sprite)$getProps()" $toStereos("person", $tags) as $alias $getLink($link)
+!else
 rectangle "$getPerson($label, $descr, $sprite)$getProps()" $toStereos("person", $tags) as $alias $getLink($link)
+!endif
 !endprocedure
 
 !unquoted procedure Person_Ext($alias, $label, $descr="", $sprite="", $tags="", $link="")
+!if ($portraitPerson == "portrait") && ($sprite == "")
+actor "$getPerson($label, $descr, $sprite)$getProps()" $toStereos("external_person", $tags) as $alias $getLink($link)
+!elseif ($portraitPerson == "outline") && ($sprite == "")
+person "$getPerson($label, $descr, $sprite)$getProps()" $toStereos("external_person", $tags) as $alias $getLink($link)
+!else
 rectangle "$getPerson($label, $descr, $sprite)$getProps()" $toStereos("external_person", $tags) as $alias $getLink($link)
+!endif
 !endprocedure
 
 !unquoted procedure System($alias, $label, $descr="", $sprite="", $tags="", $link="")
